@@ -1,0 +1,152 @@
+/* ===============AChievements============= */
+
+.about_achievements{
+    margin-top : 9rem;
+}
+
+.about_achievements-container{
+   display: grid;
+    grid-template-columns:  45% 55%; 
+    gap : 5%;
+    
+}
+
+.about_achievements-right > p{
+    margin: 1.6rem 0 2.5rem;
+    /* font-size: 80%; */
+}
+
+.about_achievements-right h2{
+    /* color:#65aca4; */
+    color:#ed635c;
+}
+
+.achievements_cards{
+    display : grid;
+    grid-template-columns: repeat(3 , 1fr);
+    gap: 1.5rem;
+}
+
+.achievement_card{
+    background: var(--color-bg1);
+    padding: 1.6rem;
+    border-radius: 1rem;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.achievement_card li{
+    list-style-type: disc;
+    align-items: center;
+}
+.achievement_card:hover{
+    background: var(--color-bg2);
+    box-shadow: 0 3rem 3rem rgba(0,0,0,0.3);
+}
+
+.achievement_icon{
+    /* background: var(--color-bg2); */
+    padding: 0.6rem;
+    border-radius: 1rem;
+    display: inline-block;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+}
+
+/*-----------team--------*/
+
+.team{
+    margin-top: 10%;
+    margin-bottom: 10%;
+    background: var(--color-bg1);
+    box-shadow: inset  0 0 3rem rgba(0,0,0,0.5);
+}
+
+.team h2{
+   padding-top: 4%;
+   padding-bottom: 3%;
+}
+
+.team_container{
+    display: grid;
+    grid-template-columns: repeat(4 ,1fr);
+    gap: 2rem;
+}
+
+.team_member {
+    background: var(--color-bg2);
+    padding: 2rem;
+    border: 1px solid transparent;
+    transition: var(--transition);
+}
+
+.team_member:hover{
+    background: transparent;
+    border-color: var(--color-primary);
+}
+
+.team_member-info *{
+    text-align: center;
+    margin-top: 1.4rem;
+}
+
+.team_member-info p{
+    color:var(--color-light);
+}
+
+
+/* -------------- media queries (tablets) --------------*/
+
+
+@media screen and (max-width: 1024px){
+    .about_achievements{
+        margin-top: 2rem;
+    }
+
+    .about_achievements-container{
+        grid-template-columns: 1fr;
+        gap: 4rem;
+
+    }
+
+    .about_achievements-left{
+        width: 80%;
+        margin: 0 auto;
+    }
+
+    .team_container{
+        grid-template-columns: repeat(3,1fr);
+        gap: 1.5rem;
+    }
+
+    .team_member{
+        padding: 1rem;
+    }
+}
+
+
+/* -------------- media queries (mobiles) --------------*/
+
+@media screen and (max-width: 600px){
+    .achievements_cards{
+        grid-template-columns: 1fr 1fr;
+        gap: 0.7rem;
+
+    }
+
+    .team_container{
+        grid-template-columns: 1fr 1fr;
+        gap: 0.7rem;
+    }
+
+    .team_member{
+        padding:0;
+    }
+
+    .team_member p{
+        margin-bottom: 1.5rem ;
+    }
+}
+
+
+

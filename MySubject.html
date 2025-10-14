@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MySubject</title>
+  <style>
+    body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to right, #0f4c75, #3282b8);
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 350px;
+        }
+        select, button, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        .hidden { display: none; }
+        .nav-bar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .back-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .back-button:hover {
+            text-decoration: underline;
+        }
+        button {
+            background: #ff9800;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #e68900;
+        }
+       
+    footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #555;
+    }
+        .hidden {
+            display: none;
+        }
+  </style>
+</head>
+<body>
+
+<div class="nav-bar">
+  <button class="back-button" onclick="goBack()">← Back</button>
+</div>
+
+<div class="container">
+  <h2>Select Your Institution</h2>
+  <select id="institution" onchange="showOptions()">
+    <option value="">--Select--</option>
+    <option value="school">School</option>
+    <option value="college">College</option>
+  </select>
+
+  <div id="schoolOptions" class="hidden">
+    <h3>Select Your Class</h3>
+    <select id="schoolClass" onchange="showStreams()">
+      <option value="">--Select--</option>
+      <option value="10">10th</option>
+      <option value="11">11th</option>
+      <option value="12">12th</option>
+    </select>
+
+    <div id="streamOptions" class="hidden">
+      <h3>Select Your Stream</h3>
+      <select id="schoolStream" onchange="showSubjects()">
+        <option value="">--Select--</option>
+        <option value="maths">Maths</option>
+        <option value="biology">Biology</option>
+        <option value="commerce">Commerce</option>
+        <option value="arts">Arts</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="collegeOptions" class="hidden">
+    <h3>Select Your Course</h3>
+    <select id="collegeCourse" onchange="showSubjects()">
+      <option value="">--Select--</option>
+      <option value="btech">B.Tech</option>
+      <option value="be">B.E</option>
+      <option value="bsc">B.Sc</option>
+      <option value="bcom">B.Com</option>
+      <option value="bba">BBA</option>
+    </select>
+  </div>
+
+  <form onsubmit="saveAndGo(event)">
+    <div id="subjectOptions" class="hidden">
+      <h3>Select Your Subject</h3>
+      <select id="subjectList" name="subject" required>
+        <option value="">--Select--</option>
+      </select>
+    </div>
+
+    <div id="attendanceOptions" class="hidden">
+      <h3>Add Attendance</h3>
+      <input type="number" id="lectureNumber" name="lectureNumber" placeholder="Lecture Number" required>
+      <input type="date" id="attendanceDate" name="date" required>
+
+      <button type="submit">Proceed to Attendance</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  function goBack() {
+    window.history.back();
+  }
+
+  function showOptions() {
+    const institution = document.getElementById("institution").value;
+    document.getElementById("schoolOptions").classList.add("hidden");
+    document.getElementById("collegeOptions").classList.add("hidden");
+    document.getElementById("subjectOptions").classList.add("hidden");
+    document.getElementById("attendanceOptions").classList.add("hidden");
+
+    if (institution === "school") {
+      document.getElementById("schoolOptions").classList.remove("hidden");
+    } else if (institution === "college") {
+      document.getElementById("collegeOptions").classList.remove("hidden");
+    }
+  }
+
+  function showStreams() {
+    document.getElementById("streamOptions").classList.remove("hidden");
+    document.getElementById("subjectOptions").classList.add("hidden");
+    document.getElementById("attendanceOptions").classList.add("hidden");
+  }
+
+  function showSubjects() {
+    const subjectList = document.getElementById("subjectList");
+    subjectList.innerHTML = `<option value="">--Select--</option>`; // reset
+    document.getElementById("subjectOptions").classList.remove("hidden");
+    document.getElementById("attendanceOptions").classList.remove("hidden");
+
+    let subjects = [];
+
+    const institution = document.getElementById("institution").value;
+    if (institution === "school") {
+      const stream = document.getElementById("schoolStream").value;
+      if (stream === "maths") subjects = ["Math", "Physics", "Chemistry"];
+      else if (stream === "biology") subjects = ["Biology", "Chemistry", "English"];
+      else if (stream === "commerce") subjects = ["Accounts", "Economics", "Business"];
+      else if (stream === "arts") subjects = ["History", "Geography", "Political Science"];
+    } else if (institution === "college") {
+      const course = document.getElementById("collegeCourse").value;
+      if (course === "btech") subjects = ["DSA", "OOPS", "OS", "DBMS"];
+      else if (course === "be") subjects = ["Mechanics", "Thermodynamics"];
+      else if (course === "bsc") subjects = ["Biotech", "Zoology"];
+      else if (course === "bcom") subjects = ["Accountancy", "Economics"];
+      else if (course === "bba") subjects = ["HRM", "Marketing"];
+    }
+
+    subjects.forEach(sub => {
+      const option = document.createElement("option");
+      option.value = sub;
+      option.textContent = sub;
+      subjectList.appendChild(option);
+    });
+  }
+
+  function saveAndGo(event) {
+    event.preventDefault();
+
+    const institution = document.getElementById("institution").value;
+    const classValue = document.getElementById("schoolClass")?.value || document.getElementById("collegeCourse")?.value;
+    const subject = document.getElementById("subjectList").value;
+    const lectureNumber = document.getElementById("lectureNumber").value;
+    const date = document.getElementById("attendanceDate").value;
+
+    localStorage.setItem("institution", institution);
+    localStorage.setItem("class", classValue);
+    localStorage.setItem("subject", subject);
+    localStorage.setItem("lectureNumber", lectureNumber);
+    localStorage.setItem("date", date);
+
+
+    window.location.href = "markattendence.html";
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Selection</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #43cea2 ,#185a9d);
+            color: white;
+            text-align: center;
+        }
+        .logout {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .logout:hover {
+            background: #e03b3b;
+        }
+        .container {
+            max-width: 500px;
+            margin: 100px auto 50px;
+            padding: 30px;
+            background: #283c86;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        h2 {
+            font-size: 24px;
+        }
+        .course-list, .branch-list, .subject-list, .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .course-btn, .branch-btn, .subject-btn, .option-btn, .back-btn {
+            background: #ffcc00;
+            border: none;
+            padding: 14px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+        }
+        .course-btn:hover, .branch-btn:hover, .subject-btn:hover, .option-btn:hover, .back-btn:hover {
+            background: #e6b800;
+            transform: scale(1.05);
+        }
+        .back-btn {
+            margin-top: 30px;
+        }
+        .hidden {
+            display: none;
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .option-btn {
+            background: #ffcc00;
+            border: none;
+            padding: 14px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+        }
+        .option-btn:hover {
+            background: #e6b800;
+            transform: scale(1.05);
+        }
+        footer { 
+            margin-top: 20px; font-size: 12px; color: #ebe3e3; 
+        }
+
+    </style>
+</head>
+<body>
+    <button class="logout" onclick="logout()">Logout</button>
+
+    <div class="container" id="course-container">
+        <h2>Select Your Course</h2>
+        <div class="course-list">
+            <button class="course-btn" onclick="selectCourse('B.Tech')">B.Tech</button>
+            <button class="course-btn" onclick="selectCourse('B.E')">B.E</button>
+            <button class="course-btn" onclick="selectCourse('B.Sc')">B.Sc</button>
+            <button class="course-btn" onclick="selectCourse('B.Com')">B.Com</button>
+            <button class="course-btn" onclick="selectCourse('BBA')">BBA</button>
+            <button class="back-btn" onclick="goBackToInstitution()">⬅ Back</button>
+            <footer>©शिक्षा④All 2025. All Rights Reserved.</footer>
+        </div>
+    </div>
+    <div class="container hidden" id="subject-container">
+        <h2 id="subject-title"></h2>
+        <div class="subject-list" id="subject-list"></div>
+        <button class="back-btn" onclick="goBackToPrevious()">⬅ Back</button>
+    </div>
+    <div class="container hidden" id="options-container">
+        <h2 id="selected-subject-title"></h2>
+        <div class="options-container">
+            <button class="option-btn">📖 Notes</button>
+            <button class="option-btn">📜 PYQ</button>
+            <button class="option-btn">📚 E-Book</button>
+            <button class="option-btn">👨‍🏫 Teacher Guidance</button>
+        </div>
+        <button class="back-btn" onclick="goBackToSubjects()">⬅ Back</button>
+    </div>   
+    
+    <div class="container hidden" id="branch-container">
+        <h2>Select Your Branch</h2>
+        <div class="branch-list">
+            <button class="branch-btn" onclick="selectBranch('Computer Science')">Computer Science</button>
+            <button class="branch-btn" onclick="selectBranch('Data Science')">Data Science</button>
+            <button class="branch-btn" onclick="selectBranch('AI & Robotics')">AI & Robotics</button>
+            <button class="branch-btn" onclick="selectBranch('AIML')">AIML</button>
+        </div>
+        <button class="back-btn" onclick="goBackToCourses()">⬅ Back</button>
+    </div>
+    
+    <div class="container hidden" id="subject-container">
+        <h2 id="subject-title"></h2>
+        <div class="subject-list" id="subject-list"></div>
+        <button class="back-btn" onclick="goBackToPrevious()">⬅ Back</button>
+    </div>
+    
+    <script>
+        let subjects = {
+            "B.Tech": ["Mathematics", "Physics", "Computer Science", "Electronics"],
+            "B.E": ["Mechanical Engineering", "Electrical Engineering", "Civil Engineering", "Electronics"],
+            "B.Sc": ["Mathematics", "Physics", "Chemistry", "Biology"],
+            "B.Com": ["Accounting", "Finance", "Economics", "Taxation"],
+            "BBA": ["Management", "Entrepreneurship", "Business Laws", "Marketing"],
+            "Computer Science": ["Data Structures", "Algorithms", "Operating Systems", "DBMS"],
+            "Data Science": ["Machine Learning", "Big Data", "Statistics", "Python Programming"],
+            "AI & Robotics": ["Deep Learning", "Neural Networks", "AI Ethics", "Robotics Programming"],
+            "AIML": ["Artificial Intelligence", "Machine Learning", "Data Science", "Python for AI"]
+        };
+        
+        let lastSelection = "course";
+        
+        function selectCourse(course) {
+            document.getElementById("course-container").classList.add("hidden");
+            if (course === "B.Tech") {
+                document.getElementById("branch-container").classList.remove("hidden");
+                lastSelection = "course";
+            } else {
+                showSubjects(course);
+                lastSelection = "course";
+            }
+        }
+
+        function selectCourse(course) {
+    document.getElementById("course-container").classList.add("hidden");
+    if (course === "B.Tech") {
+        document.getElementById("branch-container").classList.remove("hidden");
+        lastSelection = "course";
+    } else {
+        showSubjects(course);
+        lastSelection = "course";
+    }
+}
+        
+        function selectBranch(branch) {
+            document.getElementById("branch-container").classList.add("hidden");
+            showSubjects(branch);
+            lastSelection = "branch";
+        }
+        
+        function showSubjects(title) {
+                document.getElementById("subject-container").classList.remove("hidden");
+                document.getElementById("subject-title").innerText = `Subjects for ${title}`;
+                let subjectList = document.getElementById("subject-list");
+                subjectList.innerHTML = "";
+                subjects[title].forEach(subject => {
+                    let btn = document.createElement("button");
+                    btn.className = "subject-btn";
+                    btn.innerText = subject;
+                    btn.onclick = () => showOptions(subject); // ✅ This will show options when clicked
+                    subjectList.appendChild(btn);
+                });
+            }
+
+        
+        function goBackToPrevious() {
+            document.getElementById("subject-container").classList.add("hidden");
+            if (lastSelection === "course") {
+                document.getElementById("course-container").classList.remove("hidden");
+            } else {
+                document.getElementById("branch-container").classList.remove("hidden");
+            }
+        }
+        
+        function goBackToInstitution() {
+            window.location.href = "institution.html"; // BACK KRNE ME
+        }
+        
+        function logout() {
+            window.location.href = "index.html"; //logout krne PR
+        }
+        function showOptions(subject) {
+                document.getElementById("subject-container").classList.add("hidden");
+                document.getElementById("options-container").classList.remove("hidden");
+                document.getElementById("selected-subject-title").innerText = `Options for ${subject}`;
+            }
+
+            function goBackToSubjects() {
+                document.getElementById("options-container").classList.add("hidden");
+                document.getElementById("subject-container").classList.remove("hidden");
+            }
+            function goBackToCourses() {
+            document.getElementById("branch-container").classList.add("hidden");
+            document.getElementById("course-container").classList.remove("hidden");
+        }
+    </script>
+</body>
+</html>

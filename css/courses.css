@@ -1,0 +1,33 @@
+
+
+.course_info  h2{
+    
+}
+
+.course_info  p{
+    margin-top: collapse;
+}
+
+.course_info li h3{
+    margin-bottom: 5%;
+    margin-top: 4%;
+    
+}
+
+
+
+.custom-list li{
+    display: flex;
+    list-style-type: circle;
+    padding-bottom: 3%;
+    
+    
+}
+
+.custom-lists li{
+  align-items: center;
+}
+
+.courses_container{
+    margin-bottom: 10%;
+}

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Selection | Shiksha</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg,#355c7d,#6c5b7b, #c06c84);
+            color: #fff;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+            display: none;
+            transition: all 0.3s ease-in-out;
+        }
+        h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .btn, .option {
+            display: block;
+            width: 200px;
+            padding: 12px;
+            margin: 10px auto;
+            border: none;
+            background: #ffcc00;
+            color: #000;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn:hover, .option:hover {
+            background: #e6b800;
+        }
+        .back-btn {
+            display: block;
+            width: 200px;
+            padding: 10px;
+            margin: 10px auto;
+            border: none;
+            background: #f44336;
+            color: #fff;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .back-btn:hover {
+            background: #d32f2f;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            margin: 8px 0;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .logout-btn {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.logout-btn:hover {
+    background: #d43f3f;
+}
+footer { 
+            margin-top: 20px; font-size: 12px; color: #ecdede; 
+        }
+   
+    </style>
+</head>
+<body>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+    <div class="container" id="class-selection" style="display: block;">
+        <h2>Select Your Class</h2>
+        <button class="btn" onclick="selectClass(10)">Class 10</button>
+        <button class="btn" onclick="selectClass(11)">Class 11</button>
+        <button class="btn" onclick="selectClass(12)">Class 12</button>
+        <button class="back-btn" onclick="goToInstitution()">⬅ Back</button>
+        <footer>©शिक्षा④All 2025. All Rights Reserved.</footer>
+    </div>
+    
+    <div class="container" id="stream-selection">
+        <h2>Select Your Stream</h2>
+        <button class="btn" onclick="selectStream('Maths')">Maths</button>
+        <button class="btn" onclick="selectStream('Biology')">Biology</button>
+        <button class="btn" onclick="selectStream('Commerce')">Commerce</button>
+        <button class="btn" onclick="selectStream('Arts')">Arts</button>
+        <button class="back-btn" onclick="showClassSelection()">⬅ Back</button>
+    </div>
+    
+    <div class="container" id="subject-selection">
+        <h2 id="subject-title"></h2>
+        <ul id="subjects-list"></ul>
+        <button class="back-btn" onclick="showPreviousSelection()">⬅ Back</button>
+    </div>
+
+    <div class="container" id="subject-options">
+        <h2 id="selected-subject-title"></h2>
+        <div class="options-container">
+            <button class="option">Notes</button>
+            <button class="option">PYQ</button>
+            <button class="option">E-Book</button>
+            <button class="option">Teacher Guidance</button>
+        </div>
+        <button class="back-btn" onclick="showSubjectsAgain()">⬅ Back</button>
+    </div>
+    
+    <script>
+        let lastSelection = "class";
+
+        function goToInstitution() {
+            window.location.href = "institution.html";
+        }
+
+        function selectClass(classNumber) {
+            hideAllContainers();
+            if (classNumber === 10) {
+                lastSelection = "class";
+                showSubjects("Class 10", ["Maths", "Science", "English", "Social Studies"]);
+            } else {
+                lastSelection = "stream";
+                document.getElementById("stream-selection").style.display = "block";
+            }
+        }
+        
+        function selectStream(stream) {
+            hideAllContainers();
+            let subjects = {
+                "Maths": ["Physics", "Chemistry", "Mathematics", "English"],
+                "Biology": ["Physics", "Chemistry", "Biology", "English"],
+                "Commerce": ["Accountancy", "Business Studies", "Economics", "Mathematics"],
+                "Arts": ["History", "Political Science", "Sociology", "Geography"]
+            };
+            lastSelection = "stream";
+            showSubjects(stream + " Stream", subjects[stream]);
+        }
+        
+        function showSubjects(title, subjects) {
+            hideAllContainers();
+            document.getElementById("subject-selection").style.display = "block";
+            document.getElementById("subject-title").innerText = "Subjects for " + title;
+            let subjectsList = document.getElementById("subjects-list");
+            subjectsList.innerHTML = "";
+            subjects.forEach(subject => {
+                let li = document.createElement("li");
+                li.innerText = subject;
+                li.onclick = () => showSubjectOptions(subject);
+                subjectsList.appendChild(li);
+            });
+        }
+        
+        function showSubjectOptions(subject) {
+            hideAllContainers();
+            document.getElementById("subject-options").style.display = "block";
+            document.getElementById("selected-subject-title").innerText = "Options for " + subject;
+        }
+        
+        function hideAllContainers() {
+            document.getElementById("class-selection").style.display = "none";
+            document.getElementById("stream-selection").style.display = "none";
+            document.getElementById("subject-selection").style.display = "none";
+            document.getElementById("subject-options").style.display = "none";
+        }
+        
+        function showClassSelection() {
+            hideAllContainers();
+            document.getElementById("class-selection").style.display = "block";
+        }
+        
+        function showPreviousSelection() {
+            hideAllContainers();
+            if (lastSelection === "class") {
+                showClassSelection();
+            } else {
+                document.getElementById("stream-selection").style.display = "block";
+            }
+        }
+        
+        function showSubjectsAgain() {
+            hideAllContainers();
+            document.getElementById("subject-selection").style.display = "block";
+        }
+        function logout() {
+    window.location.href = "index.html"; // Logout pe home.html open hoga
+}
+    </script>
+</body>
+</html>

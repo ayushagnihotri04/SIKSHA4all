@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>शिक्षा④All | Attendance & Marks Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: #f0f2f5;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 60px;
+  }
+
+  h1 {
+    font-weight: 700;
+    font-size: 2.5rem;
+    color: #222;
+    margin-bottom: 40px;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+
+  form {
+    background: white;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgb(0 0 0 / 0.1);
+    max-width: 650px;
+    width: 100%;
+    margin-bottom: 40px;
+    transition: box-shadow 0.3s ease;
+  }
+
+  form:hover {
+    box-shadow: 0 12px 30px rgb(0 0 0 / 0.15);
+  }
+
+  form > div {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: #555;
+  }
+
+  select {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 1rem;
+    border: 2px solid #d1d9e6;
+    border-radius: 8px;
+    background: #fff;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+
+  select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+    outline: none;
+  }
+
+  #subjectContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+    max-width: 1000px;
+    width: 100%;
+  }
+
+  .subject-card {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgb(0 0 0 / 0.08);
+    padding: 25px 20px;
+    cursor: pointer;
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    user-select: none;
+  }
+
+  .subject-card:hover {
+    box-shadow: 0 12px 30px rgb(0 0 0 / 0.15);
+    transform: translateY(-6px);
+  }
+
+  .subject-card h3 {
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #1f2937;
+    margin-bottom: 10px;
+    letter-spacing: 0.02em;
+  }
+
+  .subject-card p {
+    margin: 4px 0;
+    font-weight: 500;
+    color: #4b5563;
+    font-size: 0.95rem;
+  }
+
+  .progress-bar {
+    background: #e0e7ff;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 18px;
+    margin-top: 14px;
+    box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.1);
+  }
+
+  .progress {
+    height: 100%;
+    background: linear-gradient(90deg, #2563eb, #3b82f6);
+    transition: width 0.5s ease;
+    border-radius: 12px 0 0 12px;
+  }
+
+  .status {
+    margin-top: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .status.pass {
+    color: #16a34a; /* green */
+  }
+
+  .status.fail {
+    color: #dc2626; /* red */
+  }
+
+  /* Modal Styles */
+  #marksModal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1100;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    overflow-y: auto;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  #marksModal.show {
+    display: flex;
+  }
+
+  #marksModal > div {
+    background: white;
+    border-radius: 18px;
+    max-width: 650px;
+    width: 100%;
+    padding: 35px 40px;
+    position: relative;
+    box-shadow: 0 20px 50px rgb(0 0 0 / 0.2);
+    animation: slideIn 0.35s ease forwards;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  #marksModal h2 {
+    margin-top: 0;
+    font-weight: 800;
+    font-size: 2rem;
+    color: #1e293b;
+    letter-spacing: 0.03em;
+  }
+
+  #marksModal p {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #475569;
+    margin-bottom: 24px;
+  }
+
+  #marksDateSelect {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 1rem;
+    border: 2px solid #d1d9e6;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  #marksDateSelect:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+    outline: none;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+    color: #374151;
+  }
+
+  th, td {
+    border: 1px solid #e5e7eb;
+    padding: 12px 18px;
+    text-align: left;
+  }
+
+  th {
+    background: #f9fafb;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  tr:nth-child(even) {
+    background: #f3f4f6;
+  }
+
+  #backBtn, #closeBtn {
+    padding: 12px 24px;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    user-select: none;
+    box-shadow: 0 4px 8px rgb(59 130 246 / 0.3);
+  }
+
+  #backBtn {
+    background-color: #3b82f6;
+    color: white;
+    margin-right: 12px;
+  }
+
+  #backBtn:hover {
+    background-color: #2563eb;
+    box-shadow: 0 6px 14px rgb(37 99 235 / 0.5);
+  }
+
+  #closeBtn {
+    background-color: #ef4444;
+    color: white;
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 38px;
+    height: 38px;
+    font-weight: 900;
+    font-size: 1.4rem;
+    padding: 0;
+    line-height: 1;
+    box-shadow: 0 4px 8px rgb(239 68 68 / 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #closeBtn:hover {
+    background-color: #b91c1c;
+    box-shadow: 0 6px 14px rgb(185 28 28 / 0.5);
+  }
+
+  @media (max-width: 640px) {
+    form {
+      padding: 20px 15px;
+    }
+
+    .subject-card {
+      padding: 20px 15px;
+    }
+
+    #marksModal > div {
+      padding: 25px 20px;
+    }
+
+    #backBtn, #closeBtn {
+      font-size: 0.9rem;
+      padding: 10px 20px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1>📊 Marks Dashboard</h1>
+
+<form id="institutionForm">
+  <div>
+    <label for="institution">Select Institution:</label>
+    <select id="institution" required>
+      <option value="" disabled selected>Choose School or College</option>
+      <option value="School">School</option>
+      <option value="College">College</option>
+    </select>
+  </div>
+
+  <div id="dynamicFields"></div>
+</form>
+
+<div id="subjectContainer"></div>
+
+<!-- Modal for marks & attendance details -->
+<div id="marksModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div>
+    <button id="closeBtn" aria-label="Close modal">&times;</button>
+    <h2 id="modalTitle">Subject Name</h2>
+    <p id="modalTeacher">Teacher: </p>
+
+    <label for="marksDateSelect">Select Date:</label>
+    <input type="date" id="marksDateSelect" />
+
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Remarks</th>
+        </tr>
+      </thead>
+      <tbody id="marksTableBody">
+        <!-- Attendance/Marks data rows here -->
+      </tbody>
+    </table>
+
+    <button id="backBtn">Back</button>
+  </div>
+</div>
+
+<script>
+  // Data Definitions
+  const subjectsData = {
+    // School -> class -> stream -> subjects
+    School: {
+      '10th': [
+        { name: 'Mathematics', teacher: 'Mr. Raj Gupta' },
+        { name: 'Science', teacher: 'Ms. Neha Mehta' },
+        { name: 'English', teacher: 'Mrs. Anjali Singh' },
+      ],
+      '11th': {
+        Maths: [
+          { name: 'Mathematics', teacher: 'Mr. Raj Gupta' },
+          { name: 'Physics', teacher: 'Ms. Neha Mehta' },
+          { name: 'Chemistry', teacher: 'Dr. Ramesh Sharma' },
+        ],
+        Bio: [
+          { name: 'Biology', teacher: 'Dr. Seema Patil' },
+          { name: 'Physics', teacher: 'Ms. Neha Mehta' },
+          { name: 'Chemistry', teacher: 'Dr. Ramesh Sharma' },
+        ],
+        Commerce: [
+          { name: 'Accountancy', teacher: 'Mr. Arvind Joshi' },
+          { name: 'Economics', teacher: 'Ms. Priya Shah' },
+          { name: 'Business Studies', teacher: 'Mrs. Kavita Rao' },
+        ],
+        Arts: [
+          { name: 'History', teacher: 'Mr. Sunil Desai' },
+          { name: 'Political Science', teacher: 'Ms. Aarti Sharma' },
+          { name: 'Sociology', teacher: 'Mrs. Neeta Joshi' },
+        ],
+      },
+      '12th': {
+        Maths: [
+          { name: 'Mathematics', teacher: 'Mr. Raj Gupta' },
+          { name: 'Physics', teacher: 'Ms. Neha Mehta' },
+          { name: 'Chemistry', teacher: 'Dr. Ramesh Sharma' },
+        ],
+        Bio: [
+          { name: 'Biology', teacher: 'Dr. Seema Patil' },
+          { name: 'Physics', teacher: 'Ms. Neha Mehta' },
+          { name: 'Chemistry', teacher: 'Dr. Ramesh Sharma' },
+        ],
+        Commerce: [
+          { name: 'Accountancy', teacher: 'Mr. Arvind Joshi' },
+          { name: 'Economics', teacher: 'Ms. Priya Shah' },
+          { name: 'Business Studies', teacher: 'Mrs. Kavita Rao' },
+        ],
+        Arts: [
+          { name: 'History', teacher: 'Mr. Sunil Desai' },
+          { name: 'Political Science', teacher: 'Ms. Aarti Sharma' },
+          { name: 'Sociology', teacher: 'Mrs. Neeta Joshi' },
+        ],
+      }
+    },
+    // College -> course -> branch(optional) -> subjects
+    College: {
+      'B.Tech': {
+        CSE: [
+          { name: 'Data Structures', teacher: 'Prof. Amit Singh' },
+          { name: 'Algorithms', teacher: 'Prof. Sunita Verma' },
+          { name: 'Operating Systems', teacher: 'Dr. Neeraj Kumar' },
+        ],
+        ECE: [
+          { name: 'Circuits', teacher: 'Prof. Rakesh Gupta' },
+          { name: 'Signals', teacher: 'Prof. Anjali Mehta' },
+          { name: 'Communication', teacher: 'Dr. Suresh Rao' },
+        ],
+      },
+      'B.Sc': {
+        Physics: [
+          { name: 'Quantum Mechanics', teacher: 'Dr. Vikram Joshi' },
+          { name: 'Thermodynamics', teacher: 'Dr. Deepa Sharma' },
+          { name: 'Electromagnetism', teacher: 'Prof. Rajesh Kumar' },
+        ],
+        Chemistry: [
+          { name: 'Organic Chemistry', teacher: 'Dr. Kavita Patel' },
+          { name: 'Inorganic Chemistry', teacher: 'Dr. Anil Mehta' },
+          { name: 'Physical Chemistry', teacher: 'Prof. Rohit Verma' },
+        ],
+      },
+      'B.Com': [
+        { name: 'Financial Accounting', teacher: 'Ms. Rekha Sharma' },
+        { name: 'Business Law', teacher: 'Mr. Rajiv Malhotra' },
+        { name: 'Taxation', teacher: 'Mrs. Neeta Singh' },
+      ],
+      'B.A': [
+        { name: 'History', teacher: 'Dr. Sunil Patil' },
+        { name: 'Political Science', teacher: 'Ms. Neha Joshi' },
+        { name: 'Sociology', teacher: 'Prof. Anjali Rao' },
+      ],
+    }
+  };
+
+  // Simulated marks/attendance data for each subject on different dates
+  // For demo, we randomize some data
+  function generateRandomAttendance() {
+    const statuses = ['Present', 'Absent', 'Late'];
+    const remarks = ['Good', 'Needs Improvement', 'Excellent', 'Missed'];
+    const data = [];
+    let today = new Date();
+    for (let i = 0; i < 10; i++) {
+      let date = new Date(today);
+      date.setDate(today.getDate() - i * 2);
+      data.push({
+        date: date.toISOString().slice(0, 10),
+        status: statuses[Math.floor(Math.random() * statuses.length)],
+        remarks: remarks[Math.floor(Math.random() * remarks.length)]
+      });
+    }
+    return data;
+  }
+
+  // Store attendance per subject (in real, fetch from server)
+  const attendanceData = {};
+
+  // Elements
+  const institutionSelect = document.getElementById('institution');
+  const dynamicFieldsDiv = document.getElementById('dynamicFields');
+  const subjectContainer = document.getElementById('subjectContainer');
+  const marksModal = document.getElementById('marksModal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalTeacher = document.getElementById('modalTeacher');
+  const marksDateSelect = document.getElementById('marksDateSelect');
+  const marksTableBody = document.getElementById('marksTableBody');
+  const backBtn = document.getElementById('backBtn');
+  const closeBtn = document.getElementById('closeBtn');
+
+  let currentInstitution = null;
+  let currentSelections = {};
+  let currentSubject = null;
+
+  // Helper to clear element children
+  function clearChildren(elem) {
+    while (elem.firstChild) elem.removeChild(elem.firstChild);
+  }
+
+  // Build dynamic fields based on institution
+  function buildDynamicFields(inst) {
+    clearChildren(dynamicFieldsDiv);
+    currentSelections = {};
+
+    if (inst === 'School') {
+      // School: Class dropdown (10th, 11th, 12th)
+      const classDiv = document.createElement('div');
+      classDiv.innerHTML = `
+        <label for="classSelect">Select Class:</label>
+        <select id="classSelect" required>
+          <option value="" disabled selected>Select Class</option>
+          <option value="10th">10th</option>
+          <option value="11th">11th</option>
+          <option value="12th">12th</option>
+        </select>
+      `;
+      dynamicFieldsDiv.appendChild(classDiv);
+
+      // Stream dropdown (for 11th, 12th only)
+      const streamDiv = document.createElement('div');
+      streamDiv.innerHTML = `
+        <label for="streamSelect">Select Stream:</label>
+        <select id="streamSelect" disabled>
+          <option value="" disabled selected>Select Stream</option>
+          <option value="Maths">Maths</option>
+          <option value="Bio">Bio</option>
+          <option value="Commerce">Commerce</option>
+          <option value="Arts">Arts</option>
+        </select>
+      `;
+      dynamicFieldsDiv.appendChild(streamDiv);
+
+      // Event listeners
+      const classSelect = classDiv.querySelector('select');
+      const streamSelect = streamDiv.querySelector('select');
+
+      classSelect.addEventListener('change', () => {
+        const cls = classSelect.value;
+        currentSelections.class = cls;
+
+        if (cls === '10th') {
+          streamSelect.value = '';
+          streamSelect.disabled = true;
+          delete currentSelections.stream;
+          renderSubjects();
+        } else {
+          streamSelect.disabled = false;
+          streamSelect.value = '';
+          delete currentSelections.stream;
+          clearSubjects();
+        }
+      });
+
+      streamSelect.addEventListener('change', () => {
+        currentSelections.stream = streamSelect.value;
+        renderSubjects();
+      });
+
+    } else if (inst === 'College') {
+      // College: Course dropdown
+      const courseDiv = document.createElement('div');
+      courseDiv.innerHTML = `
+        <label for="courseSelect">Select Course:</label>
+        <select id="courseSelect" required>
+          <option value="" disabled selected>Select Course</option>
+          <option value="B.Tech">B.Tech</option>
+          <option value="B.Sc">B.Sc</option>
+          <option value="B.Com">B.Com</option>
+          <option value="B.A">B.A</option>
+        </select>
+      `;
+      dynamicFieldsDiv.appendChild(courseDiv);
+
+      // Branch dropdown (only for B.Tech and B.Sc)
+      const branchDiv = document.createElement('div');
+      branchDiv.innerHTML = `
+        <label for="branchSelect">Select Branch:</label>
+        <select id="branchSelect" disabled>
+          <option value="" disabled selected>Select Branch</option>
+        </select>
+      `;
+      dynamicFieldsDiv.appendChild(branchDiv);
+
+      const courseSelect = courseDiv.querySelector('select');
+      const branchSelect = branchDiv.querySelector('select');
+
+      courseSelect.addEventListener('change', () => {
+        const course = courseSelect.value;
+        currentSelections.course = course;
+        currentSelections.branch = null;
+        clearSubjects();
+
+        // Enable branch select only if needed
+        if (course === 'B.Tech' || course === 'B.Sc') {
+          branchSelect.disabled = false;
+          branchSelect.innerHTML = '<option value="" disabled selected>Select Branch</option>';
+
+          let branches = [];
+          if (course === 'B.Tech') {
+            branches = Object.keys(subjectsData.College['B.Tech']);
+          } else if (course === 'B.Sc') {
+            branches = Object.keys(subjectsData.College['B.Sc']);
+          }
+
+          branches.forEach(b => {
+            const opt = document.createElement('option');
+            opt.value = b;
+            opt.textContent = b;
+            branchSelect.appendChild(opt);
+          });
+        } else {
+          branchSelect.disabled = true;
+          branchSelect.innerHTML = '<option value="" disabled selected>No Branch</option>';
+          renderSubjects();
+        }
+      });
+
+      branchSelect.addEventListener('change', () => {
+        currentSelections.branch = branchSelect.value;
+        renderSubjects();
+      });
+    }
+  }
+
+  // Clear subject cards
+  function clearSubjects() {
+    clearChildren(subjectContainer);
+  }
+
+  // Render subjects based on currentSelections and institution
+  function renderSubjects() {
+    clearSubjects();
+
+    if (!currentInstitution) return;
+
+    let subjects = [];
+
+    if (currentInstitution === 'School') {
+      const cls = currentSelections.class;
+      const stream = currentSelections.stream;
+
+      if (!cls) return;
+
+      if (cls === '10th') {
+        subjects = subjectsData.School['10th'];
+      } else {
+        if (!stream) return;
+        subjects = subjectsData.School[cls][stream] || [];
+      }
+    } else if (currentInstitution === 'College') {
+      const course = currentSelections.course;
+      const branch = currentSelections.branch;
+
+      if (!course) return;
+
+      if (course === 'B.Tech' || course === 'B.Sc') {
+        if (!branch) return;
+        subjects = subjectsData.College[course][branch] || [];
+      } else {
+        subjects = subjectsData.College[course] || [];
+      }
+    }
+
+    if (!subjects || subjects.length === 0) {
+      subjectContainer.textContent = 'No subjects found.';
+      return;
+    }
+
+    subjects.forEach(sub => {
+      // Prepare attendance data cache if not present
+      if (!attendanceData[sub.name]) {
+        attendanceData[sub.name] = generateRandomAttendance();
+      }
+
+      // Calculate present count & total for progress bar
+      const attendanceRecords = attendanceData[sub.name];
+      const totalClasses = attendanceRecords.length;
+      const presentCount = attendanceRecords.filter(a => a.status === 'Present').length;
+      const attendancePercent = Math.round((presentCount / totalClasses) * 100);
+
+      const card = document.createElement('div');
+      card.className = 'subject-card';
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-pressed', 'false');
+      card.setAttribute('aria-label', `${sub.name} taught by ${sub.teacher}. Attendance ${attendancePercent} percent.`);
+
+      card.innerHTML = `
+        <h3>${sub.name}</h3>
+        <p><strong>Teacher:</strong> ${sub.teacher}</p>
+        <div class="progress-bar" aria-label="Attendance progress bar">
+          <div class="progress" style="width:${attendancePercent}%;"></div>
+        </div>
+        <p class="status ${attendancePercent >= 75 ? 'pass' : 'fail'}">${attendancePercent >= 75 ? 'Pass' : 'Fail'}</p>
+      `;
+
+      card.addEventListener('click', () => {
+        openModal(sub.name, sub.teacher);
+      });
+
+      card.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openModal(sub.name, sub.teacher);
+        }
+      });
+
+      subjectContainer.appendChild(card);
+    });
+  }
+
+  // Open modal with details
+  function openModal(subjectName, teacherName) {
+    currentSubject = subjectName;
+    modalTitle.textContent = subjectName;
+    modalTeacher.textContent = `Teacher: ${teacherName}`;
+
+    // Fill date select with attendance dates
+    const attendanceRecords = attendanceData[subjectName];
+    if (!attendanceRecords) {
+      marksTableBody.innerHTML = '<tr><td colspan="3">No attendance data available.</td></tr>';
+      return;
+    }
+
+    // Set date picker min & max to available attendance dates
+    const dates = attendanceRecords.map(a => a.date);
+    marksDateSelect.min = dates[dates.length - 1];
+    marksDateSelect.max = dates[0];
+    marksDateSelect.value = dates[0];
+
+    renderAttendanceTable(attendanceRecords[0]);
+
+    marksModal.classList.add('show');
+    marksDateSelect.focus();
+  }
+
+  // Render attendance/marks for selected date
+  function renderAttendanceTable(record) {
+    clearChildren(marksTableBody);
+    if (!record) {
+      marksTableBody.innerHTML = '<tr><td colspan="3">No data for selected date.</td></tr>';
+      return;
+    }
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${record.date}</td>
+      <td>${record.status}</td>
+      <td>${record.remarks}</td>
+    `;
+    marksTableBody.appendChild(tr);
+  }
+
+  // Date change handler in modal
+  marksDateSelect.addEventListener('change', () => {
+    const date = marksDateSelect.value;
+    if (!date || !currentSubject) return;
+
+    const attendanceRecords = attendanceData[currentSubject];
+    const record = attendanceRecords.find(r => r.date === date);
+
+    if (record) {
+      renderAttendanceTable(record);
+    } else {
+      marksTableBody.innerHTML = '<tr><td colspan="3">No data for selected date.</td></tr>';
+    }
+  });
+
+  // Back button closes modal
+  backBtn.addEventListener('click', closeModal);
+  closeBtn.addEventListener('click', closeModal);
+
+  // Close modal function
+  function closeModal() {
+    marksModal.classList.remove('show');
+    currentSubject = null;
+  }
+
+  // Institution select listener
+  institutionSelect.addEventListener('change', (e) => {
+    currentInstitution = e.target.value;
+    clearSubjects();
+    buildDynamicFields(currentInstitution);
+  });
+
+  // Initial setup (empty)
+  clearSubjects();
+
+</script>
+</body>
+</html>

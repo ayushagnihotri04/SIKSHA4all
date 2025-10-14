@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educator's Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #42275a , #734b6d);
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .container h1 {
+            color: black;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+        }
+        button {
+            width: 200px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: linear-gradient(to right, #f39c12, #e74c3c);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: linear-gradient(to right, #e74c3c, #f39c12);
+        }
+        .menu-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+        }
+        .sidebar {
+            position: absolute;
+            top: 50px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+        .sidebar ul li button {
+            background: #f39c12;
+            width: 180px;
+        }
+        .show {
+            display: block !important;
+        }
+        footer { 
+            margin-top: 20px; font-size: 12px; color: #555; 
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    
+    <!-- Sidebar Menu -->
+    <div id="sidebar" class="sidebar">
+        <ul>
+            <li><button onclick="navigate('teacher-portal.jsp')"> 👤My Profile</button></li>
+            <li><button onclick="navigate('MySubject.html')">📖My Subject</button></li>
+            <li><button onclick="navigate('MyClasses.html')">My Classes</button></li>
+            <li><button onclick="navigate('managestudent.html')"> 👥Manage Students</button></li>
+            <li><button onclick="navigate('MyTimetable.html')"> 📅My TimeTable</button></li>
+            <li><button onclick="navigate('assignment.html')">Create Assignment</button></li>
+            <li><button onclick="navigate('AssignmentMarks.html')">Assignment Marks</button></li>
+            <li><button onclick="navigate('ebook.html')">E-Books</button></li>
+            <li><button onclick="logout()">Logout</button></li>
+            <!-- <li><a href="logout.do">Logout</a></li> -->
+        </ul>
+    </div>
+
+    <div class="container">
+        <h1>Welcome to Educator's Dashboard</h1>
+        <ul>
+            <li><button onclick="navigate('teacher-portal.jsp')">👤My Profile</button></li>
+            <li><button onclick="navigate('MySubject.html')">📖My Subject</button></li>
+            <li><button onclick="navigate('MyClasses.html')">My Classes</button></li>
+            <li><button onclick="navigate('managestudent.html')"> 👥Manage Students</button></li>
+            <li><button onclick="navigate('MyTimetable.html')"> 📅My TimeTable</button></li>
+            <li><button onclick="navigate('assignment.html')">Create Assignment</button></li>
+            <li><button onclick="navigate('AssignmentMarks.html')">Assignment Marks</button></li>
+            <li><button onclick="navigate('ebook.html')">E-Books</button></li>
+            <li><button onclick="logout()">Logout</button></li>
+            <!-- <li><a href="logout.do">Logout</a></li> -->
+        </ul>
+        <footer>©शिक्षा④All 2025. All Rights Reserved.</footer>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            let sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("show");
+        }
+
+        function navigate(page) {
+            window.location.href = page;
+        }
+
+        function logout() {
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

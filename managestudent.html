@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Students</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background: linear-gradient(#159957, #155799); display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .container { background: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); width: 400px; text-align: center; }
+        h2, h3 { color: #1e3a46; }
+        .form-group { margin: 10px 0; text-align: left; }
+        input { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 10px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; transition: 0.3s; margin-top: 10px; width: 100%; }
+        .add-btn { background: #4caf50; color: white; }
+        .remove-btn { background: #f44336; color: white; }
+        .delete-selected-btn { background: #d32f2f; color: white; display: none; margin-top: 10px; }
+        .student-list { display: none; margin-top: 20px; background: white; padding: 10px; border-radius: 10px; box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2); width: 100%; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #f4f4f4; } .back-btn {
+            background: #ccc; }
+            .student-list {
+                display: none;
+                margin-top: 20px;
+                background: white;
+                padding: 10px;
+                border-radius: 10px;
+                box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+                width: 100%;
+                position: relative; /* ✅ यह जरूरी है ताकि Back Button सही से सेट हो */
+            }
+            .navbar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff5722;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .navbar a:hover { background: #e64a19; }
+
+        .nav-bar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .back-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .back-button:hover {
+            text-decoration: underline;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 80%;
+            max-width: 600px;
+        }
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        select {
+            background: white;
+            color: black;
+        }
+        button {
+            background: #ff9800;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #e68900;
+        }
+        footer { 
+            margin-top: 20px; font-size: 12px; color: #eae0e0; 
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="#" onclick="showStudentList()">View Student List</a>
+    </div>
+    <div class="container" id="manageSection">
+        <h2>Welcome to Educator's Dashboard</h2>
+        <h2>Manage Students</h2>
+        <div class="form-group"><label>Name</label><input type="text" id="studentName"></div>
+        <div class="form-group"><label>Roll Number</label><input type="text" id="studentRoll"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="studentEmail"></div>
+        <button class="add-btn" onclick="addStudent()">Add Student</button>
+        <button type="button" class="back-btn" id="backButtonManageStudent" onclick="goBack('manageStudent')">Back</button>
+        <footer>©शिक्षा④All 2025. All Rights Reserved.</footer>
+
+    </div>
+    
+    <div class="student-list" id="studentListSection">
+        <!-- <button type="button" class="back-btn" id="backButtonStudentList" onclick="goBack('studentList')" style="display: none;">Back</button> -->
+        <h3>Student List</h3>
+        <button class="delete-selected-btn" onclick="deleteSelected()">Delete Selected</button>
+        <table>
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="selectAll" onclick="toggleAll()"></th>
+                    <th>Serial No.</th>
+                    <th>Name</th>
+                    <th>Roll No.</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="studentList"></tbody>
+        </table>
+    </div>
+    
+    <script>
+        let students = [];
+        function addStudent() {
+            const name = document.getElementById("studentName").value.trim();
+            const roll = document.getElementById("studentRoll").value.trim();
+            const email = document.getElementById("studentEmail").value.trim();
+            if (name === "" || roll === "" || email === "") {
+                alert("Please fill all fields correctly!");
+                return;
+            }
+            students.push({ name, roll, email });
+            document.getElementById("studentName").value = "";
+            document.getElementById("studentRoll").value = "";
+            document.getElementById("studentEmail").value = "";
+            document.getElementById("manageSection").style.display = "none";
+            document.getElementById("studentListSection").style.display = "block";
+            updateStudentList();
+        }
+        
+        function updateStudentList() {
+            const studentListBody = document.getElementById("studentList");
+            studentListBody.innerHTML = "";
+            students.forEach((student, index) => {
+                studentListBody.innerHTML += `<tr>
+                    <td><input type='checkbox' class='select-student'></td>
+                    <td>${index + 1}</td>
+                    <td contenteditable='true'>${student.name}</td>
+                    <td contenteditable='true'>${student.roll}</td>
+                    <td contenteditable='true'>${student.email}</td>
+                    <td>
+                        <button onclick='saveEdit(${index})'>Save</button>
+                        <button onclick='removeStudent(${index})'>Remove</button>
+                    </td>
+                </tr>`;
+            });
+            document.querySelector(".delete-selected-btn").style.display = students.length > 0 ? "block" : "none";
+        }
+
+        function saveEdit(index) {
+            const rows = document.getElementById("studentList").rows;
+            students[index].name = rows[index].cells[2].innerText;
+            students[index].roll = rows[index].cells[3].innerText;
+            students[index].email = rows[index].cells[4].innerText;
+            alert("Student details updated!");
+        }
+
+        function removeStudent(index) {
+            students.splice(index, 1);
+            updateStudentList();
+        }
+
+        function deleteSelected() {
+            const checkboxes = document.querySelectorAll(".select-student");
+            students = students.filter((_, i) => !checkboxes[i].checked);
+            updateStudentList();
+        }
+
+        function toggleAll() {
+            const isChecked = document.getElementById("selectAll").checked;
+            document.querySelectorAll(".select-student").forEach(cb => cb.checked = isChecked);
+        }
+
+        function showStudentList() {
+                    document.querySelector(".container").style.display = "none"; // Manage Student Hide
+                    document.getElementById("studentListSection").style.display = "block"; // Student List Show
+
+                    document.getElementById("backButtonStudentList").style.display = "block"; // ✅ Back Button को Show करें
+                    document.getElementById("backButtonManageStudent").style.display = "none"; // ❌ Manage Student का Back Button Hide करें
+                }
+
+                function goBack(from) {
+                    if (from === 'studentList') {
+                        document.querySelector(".container").style.display = "block"; // Manage Student Show
+                        document.getElementById("studentListSection").style.display = "none"; // Student List Hide
+
+                        document.getElementById("backButtonStudentList").style.display = "none"; // ❌ Student List का Back Button Hide करें
+                        document.getElementById("backButtonManageStudent").style.display = "block"; // ✅ Manage Student का Back Button Show करें
+                    } else {
+                        window.location.href = "teachers.html"; // ✅ Teachers Page पर Redirect करें
+                    }
+                }
+
+
+                function showStudentList() {
+            document.getElementById("manageSection").style.display = "none";
+            alert("Student List Page Open! ()");
+        }
+    </script>
+</body>
+</html>
+

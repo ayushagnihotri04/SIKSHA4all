@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Timetable System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+        }
+        .nav-bar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .back-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .back-button:hover {
+            text-decoration: underline;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 80%;
+            max-width: 600px;
+        }
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        select {
+            background: white;
+            color: black;
+        }
+        button {
+            background: #ff9800;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #e68900;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid white;
+            padding: 10px;
+            text-align: center;
+        }
+        footer { 
+            margin-top: 20px; font-size: 12px; color: #e3dbdb; 
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <button class="back-button" onclick="goBack()">← Back</button>
+    </div>
+    <div class="container">
+        <h2>Generate Your Timetable</h2>
+        <select id="category" onchange="updateOptions()">
+            <option value="">-- Select Category --</option>
+            <option value="school">School</option>
+            <option value="college">College</option>
+        </select>
+        
+        <div id="dynamic-fields"></div>
+        <button onclick="generateTimetable()">Proceed</button>
+        
+        <div id="timetable"></div>
+        <footer>©शिक्षा④All 2025. All Rights Reserved.</footer>
+    </div>
+
+    <script>
+        function goBack() {
+            window.location.href = 'teachers.html';
+        }
+        
+        function updateOptions() {
+            const category = document.getElementById("category").value;
+            const container = document.getElementById("dynamic-fields");
+            container.innerHTML = "";
+            
+            if (category === "school") {
+                container.innerHTML = `
+                    <select id="class">
+                        <option value="">-- Select Class --</option>
+                        <option value="10">10th</option>
+                        <option value="11">11th</option>
+                        <option value="12">12th</option>
+                    </select>
+                `;
+            } else if (category === "college") {
+                container.innerHTML = `
+                    <select id="course">
+                        <option value="">-- Select Course --</option>
+                        <option value="btech">B.Tech</option>
+                        <option value="bca">BCA</option>
+                        <option value="bba">BBA</option>
+                    </select>
+                `;
+            }
+        }
+
+        function generateTimetable() {
+            const category = document.getElementById("category").value;
+            let subjects = [];
+            let teachers = ["Prof. A", "Prof. B", "Prof. C", "Prof. D"];
+            
+            if (category === "school") {
+                subjects = ["Math", "Science", "English", "History", "Computer"];
+            } else if (category === "college") {
+                subjects = ["Data Structures", "DBMS", "AI", "OS", "Networking"];
+            }
+            
+            let timetableHTML = `<table><tr><th>Day</th><th>9:00-10:00</th><th>10:00-11:00</th><th>11:00-12:00</th></tr>`;
+            const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+            
+            days.forEach(day => {
+                timetableHTML += `<tr><td>${day}</td>`;
+                for (let i = 0; i < 3; i++) {
+                    let randomSubject = subjects[Math.floor(Math.random() * subjects.length)];
+                    let randomTeacher = teachers[Math.floor(Math.random() * teachers.length)];
+                    timetableHTML += `<td>${randomSubject} <br> (${randomTeacher})</td>`;
+                }
+                timetableHTML += `</tr>`;
+            });
+            timetableHTML += `</table>`;
+            
+            document.getElementById("timetable").innerHTML = timetableHTML;
+        }
+    </script>
+</body>
+</html>

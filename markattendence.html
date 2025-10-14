@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mark Attendance - Educator Hub</title>
+  <style>
+    /* All your styles (copied from your working version) */
+    body {
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(to right, #0f4c75, #3282b8);
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      max-width: 400px;
+      text-align: center;
+    }
+    h2, h3 {
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .back {
+      background-color: #6c757d;
+      color: white;
+      margin-top: 10px;
+    }
+    .attendance-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #007bff;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      z-index: 100;
+    }
+    .footer {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #ccc;
+    }
+    .status-options {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      gap: 10px;
+    }
+    .status-box {
+      flex: 1;
+      padding: 16px 12px;
+      background: white;
+      text-align: center;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      border: 2px solid transparent;
+      transition: all 0.4s ease;
+      position: relative;
+      user-select: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .status-box::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      background: linear-gradient(135deg, #007bff, #00c6ff);
+      border-radius: 14px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: -1;
+    }
+    .status-box:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 123, 255, 0.15);
+    }
+    .status-box:hover::before {
+      opacity: 0.4;
+    }
+    .status-box.selected::before {
+      opacity: 1;
+    }
+    .status-box.selected {
+      color: #007bff;
+      font-weight: 700;
+    }
+    .status-box input[type="radio"] {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+    <form action="markAttendance" method="post">
+        <div class="container">
+          <h2>Welcome to Educator's Dashboard</h2>
+          <h3>Mark Attendance</h3>
+    
+          <!-- ✅ Hidden Fields from localStorage -->
+          <input type="hidden" id="institution" name="institution">
+          <input type="hidden" id="class" name="class">
+          <input type="hidden" id="subject" name="subject">
+          <input type="hidden" id="lectureNumber" name="lectureNumber">
+          <input type="hidden" id="date" name="date">
+    
+          <div class="form-group">
+            <label for="student-name">Student Name</label>
+            <input type="text" id="student-name" name="studentName" required>
+          </div>
+    
+          <div class="form-group">
+            <label for="student-roll">Enrollment Number</label>
+            <input type="text" id="student-roll" name="enrollmentNumber" required>
+          </div>
+    
+          <div class="form-group">
+            <label>Status:</label>
+            <div class="status-options">
+              <label class="status-box"><input type="radio" name="status" value="Present" required> Present</label>
+              <label class="status-box"><input type="radio" name="status" value="Absent"> Absent</label>
+              <label class="status-box"><input type="radio" name="status" value="Leave"> Leave</label>
+            </div>
+          </div>
+    
+          <button type="submit" class="btn">Submit Attendance</button>
+          <button type="button" class="btn" onclick="history.back()">Back</button>
+          <button type="button" class="btn" onclick="showAttendanceList()">Student Attendance List</button>
+    
+          <footer>© शिक्षा④All 2025</footer>
+        </div>
+      </form>
+    
+      <!-- Attendance Modal -->
+      <div class="modal" id="attendanceModal">
+        <h3>Attendance List</h3>
+        <div id="attendanceList"></div>
+        <button class="btn" onclick="closeModal()">Close</button>
+      </div>
+    
+      <script>
+        // ✅ Load hidden fields from localStorage
+        window.onload = function () {
+          const fields = ["institution", "class", "subject", "lectureNumber", "date"];
+          fields.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) element.value = localStorage.getItem(id) || "";
+          });
+        };
+    
+        // Stylish status selection
+        const boxes = document.querySelectorAll('.status-box');
+        boxes.forEach(box => {
+          box.addEventListener('click', () => {
+            boxes.forEach(b => b.classList.remove('selected'));
+            box.classList.add('selected');
+            box.querySelector('input').checked = true;
+          });
+        });
+    
+        // Dummy Modal Logic
+        let attendanceData = [];
+        function showAttendanceList() {
+          const list = document.getElementById("attendanceList");
+          list.innerHTML = attendanceData.length === 0
+            ? "<p>No records found.</p>"
+            : attendanceData.map((s, i) =>
+              `<p><b>${i+1}</b>. ${s.name} - ${s.roll} - ${s.status}</p>`).join("");
+          document.getElementById("attendanceModal").style.display = "block";
+        }
+    
+        function closeModal() {
+          document.getElementById("attendanceModal").style.display = "none";
+        }
+      </script>
+    </body>
+    </html>
+
+   

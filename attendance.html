@@ -1,0 +1,949 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard | शिक्षा④All</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 40px 20px;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #1f4037, #99f2c8);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    h1 {
+      margin-bottom: 30px;
+      font-size: 32px;
+    }
+
+    form {
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      backdrop-filter: blur(5px);
+    }
+    form select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0 20px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      width: 100%;
+      max-width: 1000px;
+      margin-bottom: 40px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .card:hover {
+      transform: scale(1.05);
+    }
+    .card h2 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    .card p {
+      margin: 5px 0;
+      font-size: 16px;
+    }
+    .progress-bar {
+      background: #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      height: 15px;
+      margin-top: 10px;
+    }
+    .progress {
+      height: 100%;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+    }
+    .status {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .excellent {
+      color: #4caf50;
+    }
+    .good {
+      color: #ffeb3b;
+    }
+    .low {
+      color: #f44336;
+    }
+
+    #attendanceModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+    #attendanceModal .modal-content {
+      background: #222;
+      border-radius: 15px;
+      max-width: 600px;
+      width: 90%;
+      padding: 20px;
+      color: #fff;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    #attendanceModal h2 {
+      margin-top: 0;
+    }
+    #attendanceModal table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    #attendanceModal th, #attendanceModal td {
+      border: 1px solid #444;
+      padding: 8px 10px;
+      text-align: left;
+    }
+    #attendanceModal th {
+      background: #333;
+    }
+    #attendanceModal .close-btn {
+      background: #f44336;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      float: right;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📊 My Attendance Dashboard</h1>
+
+  <form id="selectionForm">
+    <label for="institution">Select Institution:</label>
+    <select id="institution" required>
+      <option value="">-- Select --</option>
+      <option value="school">School</option>
+      <option value="college">College</option>
+    </select>
+
+    <select id="schoolClass" style="display:none;" required>
+      <option value="">Select Class</option>
+      <option value="10th">10th</option>
+      <option value="11th">11th</option>
+      <option value="12th">12th</option>
+    </select>
+
+    <select id="schoolStream" style="display:none;" required>
+      <option value="">Select Stream</option>
+      <option value="Maths">Maths</option>
+      <option value="Bio">Bio</option>
+      <option value="Commerce">Commerce</option>
+      <option value="Arts">Arts</option>
+    </select>
+
+    <select id="collegeCourse" style="display:none;" required>
+      <option value="">Select Course</option>
+      <option value="B.Tech">B.Tech</option>
+      <option value="B.Sc">B.Sc</option>
+      <option value="BA">BA</option>
+      <option value="B.Com">B.Com</option>
+      <option value="BBA">BBA</option>
+    </select>
+
+    <select id="collegeBranch" style="display:none;" required>
+      <option value="">Select Branch</option>
+      <option value="CSE">CSE</option>
+      <option value="AI">AI</option>
+      <option value="ECE">ECE</option>
+      <option value="ME">ME</option>
+    </select>
+
+    <select id="collegeSemester" style="display:none;" required>
+      <option value="">Select Semester</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+    </select>
+  </form>
+
+  <div class="dashboard" id="subjectContainer">
+  </div>
+
+  <div id="attendanceModal">
+    <div class="modal-content">
+      <button class="close-btn" id="closeModal">Close</button>
+      <h2 id="modalSubjectName">Subject Name</h2>
+      <p><strong>Teacher:</strong> <span id="modalTeacherName"></span></p>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody id="attendanceTableBody">
+  ->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const schoolSubjects = {
+      '10th': [
+        { name: 'Mathematics', teacher: 'Mr. Raj Gupta' },
+        { name: 'Science', teacher: 'Ms. Neha Mehta' },
+        { name: 'English', teacher: 'Mrs. Anjali Verma' },
+      ],
+      '11th': {
+        'Maths': [
+          { name: 'Mathematics', teacher: 'Mr. Raj Gupta' },
+          { name: 'Physics', teacher: 'Ms. Neha Mehta' },
+          { name: 'English', teacher: 'Mrs. Anjali Verma' },
+        ],
+        'Bio': [
+          { name: 'Biology', teacher: 'Dr. Suresh Patel' },
+          { name: 'Chemistry', teacher: 'Dr. Ramesh Sharma' },
+          { name: 'English', teacher: 'Mrs. Anjali Verma' },
+        ],
+        'Commerce': [
+          { name: 'Accountancy', teacher: 'Mr. Amit Singh' },
+          { name: 'Business Studies', teacher: 'Ms. Priya Das' },
+          { name: 'Economics', teacher: 'Dr. Ravi Kumar' },
+        ],
+        'Arts': [
+          { name: 'History', teacher: 'Ms. Pooja Jain' },
+          { name: 'Political Science', teacher: 'Mr. Sunil Joshi' },
+          { name: 'Sociology', teacher: 'Mrs. Rekha Singh' },
+        ]
+      },
+      '12th': {
+        'Maths': [
+          { name: 'Mathematics', teacher: 'Mr. Raj Gupta' },
+          { name: 'Physics', teacher: 'Ms. Neha Mehta' },
+          { name: 'English', teacher: 'Mrs. Anjali Verma' },
+        ],
+        'Bio': [
+          { name: 'Biology', teacher: 'Dr. Suresh Patel' },
+          { name: 'Chemistry', teacher: 'Dr. Ramesh Sharma' },
+          { name: 'English', teacher: 'Mrs. Anjali Verma' },
+        ],
+        'Commerce': [
+          { name: 'Accountancy', teacher: 'Mr. Amit Singh' },
+          { name: 'Business Studies', teacher: 'Ms. Priya Das' },
+          { name: 'Economics', teacher: 'Dr. Ravi Kumar' },
+        ],
+        'Arts': [
+          { name: 'History', teacher: 'Ms. Pooja Jain' },
+          { name: 'Political Science', teacher: 'Mr. Sunil Joshi' },
+          { name: 'Sociology', teacher: 'Mrs. Rekha Singh' },
+        ]
+      }
+    };
+    const collegeSubjects = {
+      'B.Tech': {
+        'CSE': [
+          { name: 'Data Structures', teacher: 'Prof. Anand' },
+          { name: 'Operating Systems', teacher: 'Prof. Kiran' },
+          { name: 'Algorithms', teacher: 'Prof. Neelam' },
+        ],
+        'AI': [
+          { name: 'Machine Learning', teacher: 'Prof. Ramesh' },
+          { name: 'Deep Learning', teacher: 'Prof. Anjali' },
+          { name: 'Computer Vision', teacher: 'Prof. Rajat' },
+        ],
+        'ECE': [
+          { name: 'Signals & Systems', teacher: 'Prof. Ravi' },
+          { name: 'Analog Circuits', teacher: 'Prof. Kavita' },
+          { name: 'Digital Communication', teacher: 'Prof. Suresh' },
+        ],
+        'ME': [
+          { name: 'Thermodynamics', teacher: 'Prof. Sanjay' },
+          { name: 'Fluid Mechanics', teacher: 'Prof. Meena' },
+          { name: 'Manufacturing Process', teacher: 'Prof. Amit' },
+        ],
+      },
+      'B.Sc': [
+        { name: 'Physics', teacher: 'Dr. Vinod' },
+        { name: 'Chemistry', teacher: 'Dr. Neha' },
+        { name: 'Mathematics', teacher: 'Dr. Suman' },
+      ],
+      'BA': [
+        { name: 'History', teacher: 'Ms. Kavita' },
+        { name: 'Political Science', teacher: 'Mr. Rajesh' },
+        { name: 'Sociology', teacher: 'Ms. Seema' },
+      ],
+      'B.Com': [
+        { name: 'Accounting', teacher: 'Mr. Amit' },
+        { name: 'Finance', teacher: 'Ms. Priya' },
+        { name: 'Economics', teacher: 'Dr. Rahul' },
+      ],
+      'BBA': [
+        { name: 'Marketing', teacher: 'Ms. Rekha' },
+        { name: 'HR Management', teacher: 'Mr. Sunil' },
+        { name: 'Business Ethics', teacher: 'Mrs. Anita' },
+      ]
+    };
+    const attendanceData = {
+      'Mathematics': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Absent', remarks: 'Sick' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'Physics': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Present', remarks: '' },
+        { date: '2025-05-03', status: 'Leave', remarks: 'Family function' },
+      ],
+      'English': [
+        { date: '2025-05-01', status: 'Absent', remarks: 'Travel' },
+        { date: '2025-05-02', status: 'Present', remarks: '' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'Biology': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Absent', remarks: '' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'Chemistry': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Present', remarks: '' },
+        { date: '2025-05-03', status: 'Absent', remarks: 'Medical' },
+      ],
+      'Accountancy': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Absent', remarks: 'Sick' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'Business Studies': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Present', remarks: '' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'Economics': [
+        { date: '2025-05-01', status: 'Absent', remarks: 'Personal' },
+        { date: '2025-05-02', status: 'Present', remarks: '' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'History': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Present', remarks: '' },
+        { date: '2025-05-03', status: 'Absent', remarks: 'Travel' },
+      ],
+      'Political Science': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Leave', remarks: 'Sick' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'Sociology': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Absent', remarks: 'Family event' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'Data Structures': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Present', remarks: '' },
+        { date: '2025-05-03', status: 'Absent', remarks: 'Sick' },
+      ],
+      'Operating Systems': [
+        { date: '2025-05-01', status: 'Absent', remarks: 'Travel' },
+        { date: '2025-05-02', status: 'Present', remarks: '' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'Algorithms': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Absent', remarks: '' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'Machine Learning': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Leave', remarks: 'Personal' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'Deep Learning': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Present', remarks: '' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'Computer Vision': [
+        { date: '2025-05-01', status: 'Absent', remarks: 'Medical' },
+        { date: '2025-05-02', status: 'Present', remarks: '' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'Signals & Systems': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Absent', remarks: 'Travel' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'Analog Circuits': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Present', remarks: '' },
+        { date: '2025-05-03', status: 'Absent', remarks: 'Sick' },
+      ],
+      'Digital Communication': [
+        { date: '2025-05-01', status: 'Leave', remarks: 'Family' },
+        { date: '2025-05-02', status: 'Present', remarks: '' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'Thermodynamics': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Absent', remarks: '' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'Fluid Mechanics': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Present', remarks: '' },
+        { date: '2025-05-03', status: 'Absent', remarks: 'Travel' },
+      ],
+      'Manufacturing Process': [
+        { date: '2025-05-01', status: 'Absent', remarks: 'Sick' },
+        { date: '2025-05-02', status: 'Present', remarks: '' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+    };
+    const institutionSelect = document.getElementById('institution');
+    const schoolClassSelect = document.getElementById('schoolClass');
+    const schoolStreamSelect = document.getElementById('schoolStream');
+    const collegeCourseSelect = document.getElementById('collegeCourse');
+    const collegeBranchSelect = document.getElementById('collegeBranch');
+    const collegeSemesterSelect = document.getElementById('collegeSemester');
+    const subjectContainer = document.getElementById('subjectContainer');
+
+    const modal = document.getElementById('attendanceModal');
+    const modalSubjectName = document.getElementById('modalSubjectName');
+    const modalTeacherName = document.getElementById('modalTeacherName');
+    const attendanceTableBody = document.getElementById('attendanceTableBody');
+    const closeModalBtn = document.getElementById('closeModal');
+
+    function calculateAttendancePercent(records) {
+      const total = records.length;
+      const presentCount = records.filter(r => r.status.toLowerCase() === 'present').length;
+      return total ? Math.round((presentCount / total) * 100) : 0;
+    }
+    function getAttendanceStatus(percent) {
+      if (percent >= 85) return { text: '✅ Excellent Attendance', className: 'excellent' };
+      if (percent >= 70) return { text: '⚠️ Good Attendance', className: 'good' };
+      return { text: '❌ Low Attendance', className: 'low' };
+    }
+    institutionSelect.addEventListener('change', () => {
+      const inst = institutionSelect.value;
+      schoolClassSelect.style.display = 'none';
+      schoolStreamSelect.style.display = 'none';
+      collegeCourseSelect.style.display = 'none';
+      collegeBranchSelect.style.display = 'none';
+      collegeSemesterSelect.style.display = 'none';
+      schoolClassSelect.value = '';
+      schoolStreamSelect.value = '';
+      collegeCourseSelect.value = '';
+      collegeBranchSelect.value = '';
+      collegeSemesterSelect.value = '';
+
+      subjectContainer.innerHTML = '';
+
+      if (inst === 'school') {
+        schoolClassSelect.style.display = 'block';
+      } else if (inst === 'college') {
+        collegeCourseSelect.style.display = 'block';
+      }
+    });
+    schoolClassSelect.addEventListener('change', () => {
+      const cls = schoolClassSelect.value;
+      subjectContainer.innerHTML = '';
+      if (cls === '11th' || cls === '12th') {
+        schoolStreamSelect.style.display = 'block';
+      } else {
+        schoolStreamSelect.style.display = 'none';
+        schoolStreamSelect.value = '';
+    
+        if (cls === '10th') {
+          showSubjectsForSchool(cls, '');
+        }
+      }
+    });
+    schoolStreamSelect.addEventListener('change', () => {
+      const cls = schoolClassSelect.value;
+      const stream = schoolStreamSelect.value;
+      showSubjectsForSchool(cls, stream);
+    });
+    collegeCourseSelect.addEventListener('change', () => {
+      const course = collegeCourseSelect.value;
+      subjectContainer.innerHTML = '';
+
+      collegeBranchSelect.value = '';
+      collegeSemesterSelect.value = '';
+    
+      if (course === 'B.Tech') {
+        collegeBranchSelect.style.display = 'block';
+        collegeSemesterSelect.style.display = 'block';
+      } else if (course) {
+        collegeBranchSelect.style.display = 'none';
+        collegeSemesterSelect.style.display = 'block';
+      } else {
+        collegeBranchSelect.style.display = 'none';
+        collegeSemesterSelect.style.display = 'none';
+      }
+    });
+
+    collegeBranchSelect.addEventListener('change', () => {
+      const course = collegeCourseSelect.value;
+      const branch = collegeBranchSelect.value;
+      const sem = collegeSemesterSelect.value;
+      if (course === 'B.Tech' && branch && sem) {
+        showSubjectsForCollege(course, branch, sem);
+      }
+    });
+
+
+    collegeSemesterSelect.addEventListener('change', () => {
+      const course = collegeCourseSelect.value;
+      const branch = collegeBranchSelect.value;
+      const sem = collegeSemesterSelect.value;
+
+
+      if (course === 'B.Tech' && branch && sem) {
+        showSubjectsForCollege(course, branch, sem);
+      }
+
+      else if (course && course !== 'B.Tech' && sem) {
+        showSubjectsForCollege(course, null, sem);
+      }
+    });
+
+    
+    function showSubjectsForSchool(cls, stream) {
+      let subjects = [];
+
+      if (cls === '10th') {
+        subjects = schoolSubjects['10th'] || [];
+      } else if ((cls === '11th' || cls === '12th') && stream) {
+        subjects = (schoolSubjects[cls] && schoolSubjects[cls][stream]) || [];
+      }
+
+      renderSubjects(subjects);
+    }
+
+    function showSubjectsForCollege(course, branch, sem) {
+      let subjects = [];
+
+      if (course === 'B.Tech' && branch) {
+        subjects = (collegeSubjects[course] && collegeSubjects[course][branch]) || [];
+      } else if (course && course !== 'B.Tech') {
+        subjects = collegeSubjects[course] || [];
+      }
+
+      renderSubjects(subjects);
+    }
+
+    function renderSubjects(subjects) {
+      subjectContainer.innerHTML = '';
+
+      if (subjects.length === 0) {
+        subjectContainer.innerHTML = '<p style="color:#fff; font-style:italic;">No subjects found for the selected options.</p>';
+        return;
+      }
+
+      subjects.forEach(sub => {
+        
+        const records = attendanceData[sub.name] || [];
+        const percent = calculateAttendancePercent(records);
+        const status = getAttendanceStatus(percent);
+
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.innerHTML = `
+          <h2>${sub.name}</h2>
+          <p>👨‍🏫 Teacher: ${sub.teacher}</p>
+          <p>📈 Attendance: ${percent}%</p>
+          <div class="progress-bar">
+            <div class="progress" style="width: ${percent}%; background: ${status.className === 'excellent' ? '#4caf50' : status.className === 'good' ? 'orange' : 'red'};"></div>
+          </div>
+          <div class="status ${status.className}">${status.text}</div>
+        `;
+
+        card.addEventListener('click', () => {
+          showAttendanceModal(sub.name, sub.teacher, records);
+        });
+
+        subjectContainer.appendChild(card);
+      });
+    }
+
+    function showAttendanceModal(subjectName, teacherName, records) {
+      modalSubjectName.textContent = subjectName;
+      modalTeacherName.textContent = teacherName;
+      attendanceTableBody.innerHTML = '';
+
+      if (records.length === 0) {
+        attendanceTableBody.innerHTML = '<tr><td colspan="3" style="color:#000; text-align:center;">No attendance records found.</td></tr>';
+      } else {
+        records.forEach(rec => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${rec.date}</td>
+            <td>${rec.status}</td>
+            <td>${rec.remarks || '-'}</td>
+          `;
+          attendanceTableBody.appendChild(tr);
+        });
+      }
+
+      modal.style.display = 'block';
+    }
+
+    closeModalBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    
+    window.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+
+    
+    schoolClassSelect.style.display = 'none';
+    schoolStreamSelect.style.display = 'none';
+    collegeCourseSelect.style.display = 'none';
+    collegeBranchSelect.style.display = 'none';
+    collegeSemesterSelect.style.display = 'none';
+  </script>
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard | शिक्षा④All</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 40px 20px;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #1f4037, #99f2c8);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin-bottom: 30px;
+      font-size: 32px;
+    }
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      width: 100%;
+      max-width: 1000px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .card:hover {
+      transform: scale(1.05);
+    }
+    .card h2 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    .card p {
+      margin: 5px 0;
+      font-size: 16px;
+    }
+    .progress-bar {
+      background: #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      height: 15px;
+      margin-top: 10px;
+    }
+    .progress {
+      height: 100%;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+    }
+    .status {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .excellent {
+      color: #4caf50;
+    }
+    .good {
+      color: #ffeb3b;
+    }
+    .low {
+      color: #f44336;
+    }
+
+    #attendanceModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      overflow-y: auto;
+    }
+    #attendanceModal > div {
+      background: #fff;
+      color: #000;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      border-radius: 8px;
+      position: relative;
+    }
+    #attendanceModal button {
+      cursor: pointer;
+      padding: 5px 10px;
+      border: none;
+      background: #0072ff;
+      color: #fff;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+    #attendanceModal button:hover {
+      background: #005bb5;
+    }
+    #backButton {
+      margin-bottom: 10px;
+    }
+    #closeModal {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #f44336;
+    }
+    #closeModal:hover {
+      background: #b71c1c;
+    }
+    label, select {
+      font-size: 16px;
+      margin-bottom: 10px;
+      display: block;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #999;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background: #eee;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📊 My Attendance Dashboard</h1>
+  <div id="subjectCards" class="dashboard">
+    <div class="card" onclick="openAttendanceModal('Mathematics', 'Mr. Raj Gupta')">
+      <h2>Mathematics</h2>
+      <p>👨‍🏫 Teacher: Mr. Raj Gupta</p>
+      <p>📈 Attendance: 92%</p>
+      <div class="progress-bar">
+        <div class="progress" style="width: 92%;"></div>
+      </div>
+      <div class="status excellent">✅ Excellent Attendance</div>
+    </div>
+
+    <div class="card" onclick="openAttendanceModal('Physics', 'Ms. Neha Mehta')">
+      <h2>Physics</h2>
+      <p>👨‍🏫 Teacher: Ms. Neha Mehta</p>
+      <p>📈 Attendance: 78%</p>
+      <div class="progress-bar">
+        <div class="progress" style="width: 78%; background: orange;"></div>
+      </div>
+      <div class="status good">⚠️ Good Attendance</div>
+    </div>
+
+    <div class="card" onclick="openAttendanceModal('Chemistry', 'Dr. Ramesh Sharma')">
+      <h2>Chemistry</h2>
+      <p>👨‍🏫 Teacher: Dr. Ramesh Sharma</p>
+      <p>📈 Attendance: 58%</p>
+      <div class="progress-bar">
+        <div class="progress" style="width: 58%; background: red;"></div>
+      </div>
+      <div class="status low">❌ Low Attendance</div>
+    </div>
+  </div>
+
+  <div id="attendanceModal">
+    <div>
+      <button id="backButton">← Back</button>
+      <button id="closeModal">X</button>
+      <h2 id="modalSubjectName"></h2>
+      <p id="modalTeacherName"></p>
+
+      <label for="dateSelect">Select Date:</label>
+      <select id="dateSelect"></select>
+
+      <table>
+        <thead>
+          <tr><th>Date</th><th>Status</th><th>Remarks</th></tr>
+        </thead>
+        <tbody id="attendanceTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById('attendanceModal');
+    const closeModalBtn = document.getElementById('closeModal');
+    const backButton = document.getElementById('backButton');
+    const modalSubjectName = document.getElementById('modalSubjectName');
+    const modalTeacherName = document.getElementById('modalTeacherName');
+    const attendanceTableBody = document.getElementById('attendanceTableBody');
+    const dateSelect = document.getElementById('dateSelect');
+
+    const attendanceData = {
+      'Mathematics': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Absent', remarks: 'Sick' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+      'Physics': [
+        { date: '2025-05-01', status: 'Present', remarks: '' },
+        { date: '2025-05-02', status: 'Present', remarks: '' },
+      ],
+      'Chemistry': [
+        { date: '2025-05-01', status: 'Absent', remarks: 'Family Emergency' },
+        { date: '2025-05-03', status: 'Present', remarks: '' },
+      ],
+    };
+
+    function openAttendanceModal(subjectName, teacherName) {
+      modalSubjectName.textContent = subjectName;
+      modalTeacherName.textContent = 'Teacher: ' + teacherName;
+
+      const records = attendanceData[subjectName] || [];
+      const uniqueDates = [...new Set(records.map(r => r.date))].sort();
+
+      dateSelect.innerHTML = '';
+      uniqueDates.forEach(date => {
+        const option = document.createElement('option');
+        option.value = date;
+        option.textContent = date;
+        dateSelect.appendChild(option);
+      });
+
+      if (uniqueDates.length > 0) {
+        dateSelect.value = uniqueDates[0];
+        updateAttendanceTable(subjectName, uniqueDates[0]);
+      } else {
+        attendanceTableBody.innerHTML = '<tr><td colspan="3">No attendance records.</td></tr>';
+      }
+
+      modal.style.display = 'block';
+    }
+
+    function updateAttendanceTable(subjectName, selectedDate) {
+      const records = attendanceData[subjectName] || [];
+      const filteredRecords = records.filter(r => r.date === selectedDate);
+
+      if (filteredRecords.length === 0) {
+        attendanceTableBody.innerHTML = '<tr><td colspan="3">No records for this date.</td></tr>';
+      } else {
+        attendanceTableBody.innerHTML = '';
+        filteredRecords.forEach(record => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${record.date}</td>
+            <td>${record.status}</td>
+            <td>${record.remarks || '-'}</td>
+          `;
+          attendanceTableBody.appendChild(tr);
+        });
+      }
+    }
+
+    dateSelect.addEventListener('change', () => {
+      const subjectName = modalSubjectName.textContent;
+      updateAttendanceTable(subjectName, dateSelect.value);
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    backButton.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

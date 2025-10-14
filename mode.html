@@ -1,0 +1,96 @@
+><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Your Mode</title>
+
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #360033, #0b8793);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+        }
+        h2 {
+            color: white;
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 240px;
+            padding: 18px;
+            margin: 15px;
+            text-decoration: none;
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            border-radius: 15px;
+            transition: 0.3s;
+            text-align: center;
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+        .student {
+            background: #472C4C;
+        }
+        .teacher {
+            background: #FF416C;
+        }
+        .button:hover {
+            transform: scale(1.1);
+            opacity: 0.9;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .back {
+            background: rgb(6, 219, 234); /* Blue background */
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .back:hover {
+            background: #0ef; /* Darker blue on hover */
+            transform: scale(1.1);
+            opacity: 0.9;
+        }
+        footer { 
+            margin-top: 20px; font-size: 12px; color: #f6eaea; 
+        }
+    </style>
+</head>
+<body>
+    <h2>Select Your Mode</h2>
+    <button class="button student" onclick="setUserType('student'); window.location.href='login.html'">🎓 Student</button> 
+    <button class="button teacher" onclick="setUserType('teacher'); window.location.href='login.html'">📚 Teacher</button>
+    
+      <!-- Back Button (Takes user to home.html)  -->
+            <a href="index.html" class="button back"><span class="icon">🔙</span></a>
+            <footer>©शिक्षा④All 2025. All Rights Reserved.</footer>
+    <script>
+        function setUserType(type) {
+            localStorage.setItem("userType", type);
+            console.log("User Type Selected:", type); // Debugging ke liye
+        }
+    </script>
+</body>   
+</html>
