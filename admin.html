@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel - ShikshaForAll</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+        }
+
+        /* LOGIN */
+        #loginBox {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            background: #111827;
+            padding: 40px;
+            border-radius: 15px;
+            width: 300px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.4);
+        }
+
+        .login-card h2 {
+            margin-bottom: 20px;
+        }
+
+        /* DASHBOARD */
+        #adminPanel {
+            display: none;
+        }
+
+        .navbar {
+            background: #020617;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .card {
+            background: #111827;
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 400px;
+            margin: auto;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: none;
+            background: #1f2937;
+            color: white;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background: linear-gradient(45deg, #22c55e, #4ade80);
+            border: none;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        .logout {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            background: red;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 🔐 LOGIN -->
+<div id="loginBox">
+    <div class="login-card">
+        <h2>🔐 Admin Login</h2>
+        <input type="password" id="password" placeholder="Enter Password">
+        <button onclick="checkLogin()">Login</button>
+    </div>
+</div>
+
+<!-- 🔥 ADMIN PANEL -->
+<div id="adminPanel">
+
+    <div class="navbar">
+        ShikshaForAll Admin 🚀
+        <span class="logout" onclick="logout()">Logout</span>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h3>Add / Update Subject</h3>
+
+            <input id="subject" placeholder="Subject Name (exact same)">
+            <input id="notes" placeholder="Notes Link">
+            <input id="pyq" placeholder="PYQ Link">
+            <input id="ebook" placeholder="Ebook Link">
+            <input id="video" placeholder="Video Link">
+
+            <button onclick="saveData()">Save / Update</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCuyCdHj6ToHzr7wxf63CMR2LIHO2eThB8",
+  authDomain: "shikshaforall-de162.firebaseapp.com",
+  projectId: "shikshaforall-de162",
+  storageBucket: "shikshaforall-de162.firebasestorage.app",
+  messagingSenderId: "716902693784",
+  appId: "1:716902693784:web:79a7767123e504619c09ed"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// 🔐 LOGIN
+function checkLogin() {
+    let pass = document.getElementById("password").value;
+
+    if (pass === "12345") {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("adminPanel").style.display = "block";
+    } else {
+        alert("Wrong Password ❌");
+    }
+}
+
+// 🔥 SAVE DATA
+function saveData() {
+    let subject = document.getElementById("subject").value;
+
+    db.collection("subjects").doc(subject).set({
+        notes: document.getElementById("notes").value,
+        pyq: document.getElementById("pyq").value,
+        ebook: document.getElementById("ebook").value,
+        video: document.getElementById("video").value
+    })
+    .then(() => {
+        alert("Saved Successfully 🔥");
+    });
+}
+
+// 🚪 LOGOUT
+function logout(){
+    document.getElementById("adminPanel").style.display = "none";
+    document.getElementById("loginBox").style.display = "flex";
+}
+</script>
+
+</body>
+</html>
